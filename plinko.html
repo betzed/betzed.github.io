@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plinko Verification</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body class="container">
+    <h1 class="mt-4">Plinko Verification</h1>
+
+    <div class="mb-3">
+        <label for="server-seed">Server seed</label>
+        <input type="text" class="form-control" id="server" value="" onchange="update()" />
+    </div>
+
+    <div class="mb-3">
+        <label for="client-seed">Client seed</label>
+        <input type="text" class="form-control" id="client" value="" onchange="update()" />
+    </div>
+
+    <div class="mb-3">
+        <label for="nonce">Nonce</label>
+        <input type="number" class="form-control" id="nonce" value="" onchange="update()" />
+    </div>
+
+    <div class="mb-3">
+        <label for="count">Rows</label>
+        <input type="number" class="form-control" id="count" value="16" onchange="update()" />
+    </div>
+
+    <div class="mb-3">
+        <label>Result: <span id="result"></span></label>
+    </div>
+
+    <script src="./script.js"></script>
+    <script>
+        async function update() {
+            const server = hexToUint8Array(
+                document.getElementById('server').value.trim()
+            );
+            const client = document.getElementById('client').value.trim()
+            const nonce = parseInt(document.getElementById('nonce').value);
+            const rows = parseInt(document.getElementById('count').value);
+
+            const seedNum = new SeedNum(server, client, nonce);
+            const directions = ['L', 'R']
+
+            const plinkoResults = []
+            for (let i = 0; i < rows; i++) {
+                const dir = await seedNum.getItem(directions);
+                plinkoResults.push(dir);
+            }
+
+            document.getElementById('result').textContent = plinkoResults.join('');
+        }
+
+        (async () => {
+            await update();
+        })();
+
+    </script>
+</body>
+
+</html>
